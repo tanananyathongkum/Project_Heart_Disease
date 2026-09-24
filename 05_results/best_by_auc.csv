@@ -1,0 +1,9 @@
+Model,Split,Feature_Selection,Sampling,CV_Accuracy,CV_Std,Test_Accuracy,Precision,Recall,F1_Score,ROC_AUC,TP,TN,FP,FN
+ResNet,90:10,FS_RF,NearMiss (Fold 1),,,0.622,0.267016,0.51,0.350515,0.575275,,,,
+Decision Tree,90:10,Baseline,ADASYN (Fold 3),0.732556,0.012994,0.757,0.273684,0.13,0.176271,0.550034,26.0,731.0,69.0,174.0
+DNN,90:10,Baseline,ClusterCentroids (Fold 2),0.612444,0.077177,0.723,0.254777,0.2,0.22409,0.549731,40.0,683.0,117.0,160.0
+XGBoost,90:10,Baseline,NearMiss,0.383,0.002713,0.401,0.21045,0.725,0.326209,0.549406,,,,
+TabNet,90:10,FS_LR,NearMiss,,,0.35,0.207792,0.8,0.329897,0.546406,,,,
+Random Forest,90:10,Baseline,ADASYN (Fold 2),0.796667,0.000609,0.799,0.4,0.01,0.019512,0.538775,2.0,797.0,3.0,198.0
+MLP,90:10,FS_LR,RandomUnderSampler,,,0.797,0.285714,0.01,0.019324,0.537781,,,,
+Logistic Regression,90:10,FS_LR,NearMiss (Fold 2),,,0.493,0.210923,0.56,0.30643,0.528256,,,,

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+env/
+venv/
+
+# Data (large, reproducible from kagglehub download)
+Data_Split/
+heart_disease.csv
+
+# Trained model artifacts (large, reproducible by re-running the notebooks)
+**/models/
+*.pkl
+*.h5
+*.zip
+!heart-disease-imbalance-study.zip
+
+# OS files
+.DS_Store
+__MACOSX/

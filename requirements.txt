@@ -1,0 +1,11 @@
+pandas
+numpy
+scikit-learn
+imbalanced-learn
+xgboost
+pytorch-tabnet
+torch
+matplotlib
+seaborn
+joblib
+kagglehub
