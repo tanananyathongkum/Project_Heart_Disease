@@ -28,9 +28,9 @@ accuracy figure.
 |---|---|
 | **1. Data Acquisition** | Loaded via `kagglehub`; explored shape, dtypes, distributions, and class balance |
 | **2. Preprocessing** | Imputed missing values (mean for numeric, mode for categorical); encoded categorical features; split into **two parallel configurations (80:20 and 90:10)** to test whether split ratio affects outcome; scaled features with `StandardScaler` (fit on train only) |
-| **3. Feature Selection** | Recursive Feature Elimination (RFE) compared across 4 estimators (Logistic Regression, Decision Tree, Random Forest, Gradient Boosting) via `RepeatedStratifiedKFold`; features selected by LR and RF cross-checked for agreement |
-| **4. Model Training** | 8 architectures trained per split: Logistic Regression, Decision Tree, Random Forest, XGBoost, MLP, DNN, ResNet, TabNet |
-| **5. Imbalance Handling** | Each model tested against 9 techniques: no sampling (baseline), SMOTE, ADASYN, RandomUnderSampler, NearMiss, ClusterCentroids, SMOTETomek, SMOTEENN, ADASYN+Tomek, BorderlineSMOTE+Tomek — using `StratifiedKFold` (5-fold), with the best fold selected for final test-set evaluation |
+| **3. Feature Selection** | Recursive Feature Elimination (RFE) compared across 4 estimators (Logistic Regression, Decision Tree, Random Forest, Gradient Boosting) via `RepeatedStratifiedKFold`; top-10 features selected separately by LR (`rfe_lr_features.pkl`) and RF (`rfe_rf_features.pkl`) for cross-comparison |
+| **4. Model Training** | 8 architectures × 2 splits × 3 feature sets (all features / FS_LR / FS_RF): Logistic Regression, Decision Tree, Random Forest, XGBoost, MLP, DNN, ResNet, TabNet |
+| **5. Imbalance Handling** | Each model tested against 10 techniques: no sampling (baseline), SMOTE, ADASYN, RandomUnderSampler, NearMiss, ClusterCentroids, SMOTETomek, SMOTEENN, ADASYN+Tomek, BorderlineSMOTE+Tomek — using `StratifiedKFold` (5-fold), with the best fold selected for final test-set evaluation |
 | **6. Evaluation** | Accuracy, Precision, Recall, F1, ROC-AUC, and full confusion matrix for every model × split × technique combination |
 | **7. Diagnostic Analysis** | Correlation and mutual information between every feature and the target, to test whether poor results were a modeling problem or a data problem |
 
@@ -78,7 +78,7 @@ All three point to the same conclusion: **the dataset's features carry almost no
 for the target**, most likely because it is a synthetically generated dataset rather than real
 clinical data with genuine physiological relationships.
 
-Full results for all 158 configurations: [`all_results_combined.csv`](all_results_combined.csv)
+Full results for all configurations: [`master_results.csv`](05_results/master_results.csv) · feature-selection results: [`fs_results_combined.csv`](05_results/fs_results_combined.csv)
 
 ## What This Project Demonstrates
 
@@ -100,36 +100,49 @@ reasoning** are:
 ```
 heart-disease-imbalance-study/
 ├── README.md                          ← this file
+├── requirements.txt
 ├── 01_data_acquisition/
 │   └── Step1_Data_Acquisition.ipynb
 ├── 02_preprocessing/
 │   └── Step2_Data_Preprocessing.ipynb  (80:20 and 90:10 splits)
 ├── 03_feature_selection/
-│   ├── step2_5.ipynb                   (80:20)
-│   └── step2_5_90.ipynb                (90:10)
+│   ├── Step3_RFE.ipynb                 (RFE with Random Forest only)
+│   └── step3_FS_LR.ipynb               (RFE comparison: LR, CART, RF, GBM → saves rfe_lr_features.pkl & rfe_rf_features.pkl)
 ├── 04_model_training/
-│   ├── Step3_Train_Log_{80,90}.ipynb
-│   ├── Step3_Train_DECISION_Tree_{80,90}.ipynb
-│   ├── Step3_Train_Random_{80,90}.ipynb
-│   ├── Step3_Train_XGBoost_{80,90}.ipynb
-│   ├── Strp3_Train_MLP_{80,90}.ipynb
-│   ├── Step3_Train_DNN_{80,90}.ipynb
-│   ├── Step3_Train_ResNet_{80,90}.ipynb
-│   └── Step3_Train_TabNet_{80,90}.ipynb
-├── 05_results/
-│   ├── all_results_combined.csv        ← all 158 experiment results
-│   ├── best_by_recall.csv
-│   ├── best_by_f1.csv
-│   └── best_by_auc.csv
-└── requirements.txt
+│   ├── Step4_Train_Log_{80,90}.ipynb
+│   ├── Step4_Train_DECISION_Tree_{80,90}.ipynb
+│   ├── Step4_Train_Random_{80,90}.ipynb
+│   ├── Step4_Train_XGBoost_{80,90}.ipynb
+│   ├── Step4_Train_MLP_{80,90}.ipynb
+│   ├── Step4_Train_DNN_{80,90}.ipynb
+│   ├── Step4_Train_ResNet_{80,90}.ipynb
+│   ├── Step4_Train_TabNet_{80,90}.ipynb
+│   ├── Step4_Train_Log_90_FS_{LR,RF}.ipynb          ← feature-selected variants
+│   ├── Step4_Train_DECISION_Tree_90_FS_{LR,RF}.ipynb
+│   ├── Step4_Train_Random_90_FS_{LR,RF}.ipynb
+│   ├── Step4_Train_XGBoost_90_FS_{LR,RF}.ipynb
+│   ├── Step4_Train_MLP_90_FS_{LR,RF}.ipynb
+│   ├── Step4_Train_DNN_90_FS_{LR,RF}.ipynb
+│   ├── Step4_Train_ResNet_90_FS_{LR,RF}.ipynb
+│   └── Step4_Train_TabNet_90_FS_{LR,RF}.ipynb
+└── 05_results/
+    ├── master_results.csv              ← all experiment results (80:20 and 90:10, no FS)
+    ├── fs_results_combined.csv         ← feature selection results (FS_LR and FS_RF, 160 rows)
+    ├── Full_Model_Comparison.csv       ← combined comparison across all splits
+    ├── Sorted_Model_Comparison.csv
+    ├── best_by_recall.csv
+    ├── best_by_f1.csv
+    ├── best_by_auc.csv
+    └── summay.ipynb                    ← aggregation and comparison notebook
 ```
 
 ## Reproducing This Work
 
 1. Download the dataset via `kagglehub.dataset_download("oktayrdeki/heart-disease")`
 2. Run notebooks in numeric order (01 → 05)
-3. Each `Step3_Train_*` notebook is self-contained per model; run all 8 (×2 splits) to reproduce
-   the full comparison table
+3. Run `03_feature_selection/step3_FS_LR.ipynb` to generate feature selection pkl files, then copy `models/` into `04_model_training/`
+4. Each `Step4_Train_*` notebook is self-contained per model; run all 8 (×2 splits) for baseline results, plus 16 FS variants (`_FS_LR` / `_FS_RF`) for feature-selected results
+5. Run `05_results/summay.ipynb` to aggregate all results
 
 ## Limitations & Honest Caveats
 
