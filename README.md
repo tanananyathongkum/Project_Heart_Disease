@@ -129,7 +129,6 @@ heart-disease-imbalance-study/
     ├── master_results.csv              ← all experiment results (80:20 and 90:10, no FS)
     ├── fs_results_combined.csv         ← feature selection results (FS_LR and FS_RF, 160 rows)
     ├── Full_Model_Comparison.csv       ← combined comparison across all splits
-    ├── Sorted_Model_Comparison.csv
     ├── best_by_recall.csv
     ├── best_by_f1.csv
     ├── best_by_auc.csv
